@@ -50,21 +50,30 @@ class TCAL6416():
         return ( read_data(self.INPUT_BASE_ADDR + bank, 1) & (1 << pin) ) >> pin
     
     def set_pull_ups(self, cfg=0xFFFF): # high value means pull-up enabled, if configured as input
+        # read-modify-write PULL_ENABLE, high is enabled
         orig_value = self.read_data(self.PULL_ENABLE_BASE_ADDR, 1)
-        new_value  = (orig_value & (~cfg & 0xFF)) + (cfg & 0xFF)
+        new_value  = orig_value + (cfg & 0xFF)
         self.write_data(self.PULL_ENABLE_BASE_ADDR, [new_value])
         orig_value = self.read_data(self.PULL_ENABLE_BASE_ADDR + 1, 1)
-        new_value  = (orig_value & (~(cfg>>8) & 0xFF)) + ((cfg>>8) & 0xFF)
+        new_value  = orig_value + ((cfg>>8) & 0xFF)
         self.write_data(self.PULL_ENABLE_BASE_ADDR + 1, [new_value])
-        self.write_data(self.PULL_SELECT_BASE_ADDR, [(cfg & 0xFF), ((cfg>>8) & 0xFF)])
+        # read-modify-write PULL_SELECT, high is pull-up, low is pull-down
+        orig_value = self.read_data(self.PULL_SELECT_BASE_ADDR, 1)
+        new_value  = orig_value + (cfg & 0xFF)
+        self.write_data(self.PULL_SELECT_BASE_ADDR, [new_value])
+        orig_value = self.read_data(self.PULL_SELECT_BASE_ADDR + 1, 1)
+        new_value  = orig_value + ((cfg>>8) & 0xFF)
+        self.write_data(self.PULL_SELECT_BASE_ADDR + 1, [new_value])
     
     def set_pull_downs(self, cfg=0xFFFF): # high value means pull-down enabled, if configured as input
+        # read-modify-write PULL_ENABLE, high is enabled
         orig_value = self.read_data(self.PULL_ENABLE_BASE_ADDR, 1)
-        new_value  = (orig_value & (~cfg & 0xFF)) + (cfg & 0xFF)
+        new_value  = orig_value + (cfg & 0xFF)
         self.write_data(self.PULL_ENABLE_BASE_ADDR, [new_value])
         orig_value = self.read_data(self.PULL_ENABLE_BASE_ADDR + 1, 1)
-        new_value  = (orig_value & (~(cfg>>8) & 0xFF)) + ((cfg>>8) & 0xFF)
+        new_value  = orig_value + ((cfg>>8) & 0xFF)
         self.write_data(self.PULL_ENABLE_BASE_ADDR + 1, [new_value])
+        # read-modify-write PULL_SELECT, high is pull-up, low is pull-down
         orig_value = self.read_data(self.PULL_SELECT_BASE_ADDR, 1)
         new_value  = orig_value & (~cfg & 0xFF)
         self.write_data(self.PULL_SELECT_BASE_ADDR, [new_value])
