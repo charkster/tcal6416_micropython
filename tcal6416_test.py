@@ -19,4 +19,6 @@ tcal.config_pin(board_dict['signal_in1'  ], 'input')
 tcal.config_pin(board_dict['signal_out1' ], 'output')
 tcal.config_pin(board_dict['signal_out16'], 'output')
 
+tcal.set_pull_down(board_dict['signal_in1'])
+
 print("signal_in1 has value {:d}".format(tcal.read_pin(board_dict['signal_in1'])))
